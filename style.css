@@ -1,0 +1,37 @@
+canvas {
+	position: fixed;
+	top: 0;
+	left: 0;
+	/* cursor: none;  */
+}
+
+.crosshair {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+	z-index: 1;
+}
+
+.crosshair::before,
+.crosshair::after {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 0;
+  height: 1px;
+  width: 20px;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.crosshair::after {
+  top: -10px;
+  left: 0;
+  width: 1px;
+  height: 20px;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+}
