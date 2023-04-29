@@ -1,6 +1,5 @@
 // Un used
 import * as THREE from "three";
-import {scene} from '../main'
 
 let c = 0
 export let position = [0, 0, 0]
