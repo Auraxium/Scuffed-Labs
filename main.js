@@ -3,20 +3,25 @@ import * as THREE from "three";
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls'
 import * as player from'./player.js'
 import { FirstPersonControls } from 'three/addons/controls/FirstPersonControls.js';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import $ from 'jquery'
+
+let PI = Math.PI;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 let rote = 0;
 const canvas = document.querySelector("#bg");
-
+const controls = new THREE.PointerLockControls(camera, document.documentElement);
 const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.set(-0.617933061648658,44.55060579869047,-90.75970589016225);
+camera.position.set(0,0,30);
+camera.rotateZ(Math.PI) 
+// camera.rotateX(Math.PI) 
 
 renderer.render(scene, camera);
 
@@ -37,10 +42,7 @@ const lightHelper = new THREE.PointLightHelper(pointLight)
 const gridHelper = new THREE.GridHelper(200, 50);
 scene.add(lightHelper, gridHelper)
 
-const controls = new OrbitControls(camera, renderer.domElement)
-
-player.que()
-console.log(player.move.forward)
+// const controls = new OrbitControls(camera, renderer.domElement)
 
 function addStar() {
 	const geometry = new THREE.SphereGeometry(.25)
@@ -64,7 +66,7 @@ function animate() {
 	torus.rotation.y += 0.01;
 	torus.rotation.z += 0.01;
 
-	//controls.update()
+	controls.update();
 
 	// const angle = 0; // adjust this value to change the amount of rotation
 	// const axis = new THREE.Vector3(0, 1, 0); // the axis to rotate around (in this case, the y-axis)
@@ -111,31 +113,39 @@ document.addEventListener('keydown', async (e) => {
 	}
 })
 
-let savex;
-let savey;
+let xRotation = 0
 
-$(document).on('pointerhover', (e) => {
+// canvas.addEventListener('mousemove', function(event) {
+// 	if (document.pointerLockElement === canvas) { // check if pointer lock is active
+// 			const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+// 			const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
 
-})
+// 			const qx = new THREE.Quaternion();
 
-canvas.addEventListener('mousemove', function(event) {
-	if (document.pointerLockElement === canvas) { // check if pointer lock is active
-			const movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-			const movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-			//console.log(movementY)
-			camera.rotation.y += movementX/3000
-			camera.rotation.x += movementY/6000
-			// Use the movementX and movementY values to rotate the camera or an object
-	}
-});
 
-canvas.addEventListener('click', function() { 
-	canvas.requestPointerLock();
-});
+
+
+// 			//console.log(movementY)
+// 			// camera.rotation.z += movementX/1000
+// 			// camera.rotation.y += clamp(movementX/2000, -1, 1)
+// 			camera.rotation.x = clamp(camera.rotation.x + clamp(movementY/1000, -1, 1), -PI/2, PI/2)
+
+// 			// camera.rotation.set( 0, movementY/1000, 0 );
+
+// 			// Use the movementX and movementY values to rotate the camera or an object
+// 	}
+// });
+
+// canvas.addEventListener('click', function() { 
+// 	canvas.requestPointerLock();
+// });
 
 $(document).on('contextmenu', (e) => {
 	$('canvas').css('cursor', 'auto')
 })
 
+function clamp(num, min, max) {
+	return num <= min ? min : num >= max ? max : num;
+}
 
 document.body.requestPointerLock();

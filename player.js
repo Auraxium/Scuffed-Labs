@@ -1,13 +1,7 @@
 import * as THREE from "three";
 
 let c = 0
-
-export let k = 'hi my name is';
 export let position = [0, 0, 0]
-
-export function que() {
-//move.forward = 99;
-}
 
 export let move = {
 	forward: 0,
