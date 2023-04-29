@@ -5,33 +5,42 @@ canvas {
 	/* cursor: none;  */
 }
 
+* {
+	box-sizing: border-box;
+
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+html,body {
+	margin: 0;
+	padding: 0;
+}
+
 .crosshair {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 0;
-  height: 0;
-	z-index: 1;
+	position: absolute;
+	color: green;
+	z-index: 999;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 25px;
 }
 
-.crosshair::before,
-.crosshair::after {
-  content: '';
-  position: absolute;
-  left: -10px;
-  top: 0;
-  height: 1px;
-  width: 20px;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-}
-
-.crosshair::after {
-  top: -10px;
-  left: 0;
-  width: 1px;
-  height: 20px;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
+.score {
+	position: absolute;
+	z-index: 999;
+	padding: 5px;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: end;
+	align-items: start;
+	font-size: 40px;
 }

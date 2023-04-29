@@ -1,4 +1,6 @@
+// Un used
 import * as THREE from "three";
+import {scene} from '../main'
 
 let c = 0
 export let position = [0, 0, 0]
@@ -11,6 +13,8 @@ export let move = {
 const geometry = new THREE.BoxGeometry(5,5,5,5);
 const material = new THREE.MeshStandardMaterial({ color: 0x8f6347 });
 export const box = new THREE.Mesh(geometry, material);
+
+// scene.add(box)
 
 function animate() {
 	box.position.x += move.side
