@@ -100,10 +100,12 @@ document.addEventListener("keydown", async (e) => {
       location.reload();
       break;
     case "k":
-      await $("canvas")[0].requestPointerLock({
-        unadjustedMovement: true,
-      });
-      break;
+      scene.traverse(obj => {
+        if (obj.geometry.type == "SphereGeometry") {
+          scene.remove(obj);
+          $(".score").html("Score: " + ++score);
+        }
+      })
   }
 });
 
