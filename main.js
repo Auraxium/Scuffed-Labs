@@ -107,10 +107,17 @@ document.addEventListener("keydown", async (e) => {
       location.reload();
       break;
     case "k":
-      await $("canvas")[0].requestPointerLock({
-        unadjustedMovement: true,
+      let m = [];
+      scene.traverse((obj) => {
+        if (obj.isMesh && obj.geometry.type == "SphereGeometry") {
+          m.push(obj);
+        }
       });
-      break;
+      if (m.length) {
+        scene.remove(m[0]);
+        $(".score").html("Score: " + ++score);
+        console.log(m);
+      }
   }
 });
 
