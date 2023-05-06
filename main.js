@@ -82,6 +82,13 @@ async function delay(secs) {
     setTimeout(() => resolve(""), secs);
   });
 }
+let time = 0;
+
+function timeTick() {
+	
+}
+
+let timeIV = setInterval(timeTick)
 
 //scuffed debug
 document.addEventListener("keydown", async (e) => {
