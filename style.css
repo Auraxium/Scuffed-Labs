@@ -21,26 +21,29 @@ html,body {
 	padding: 0;
 }
 
-.crosshair {
+body > div {
 	position: absolute;
-	color: green;
 	z-index: 999;
 	width: 100vw;
 	height: 100vh;
 	display: flex;
+}
+
+.crosshair {
+	color: green;
 	justify-content: center;
 	align-items: center;
 	font-size: 25px;
 }
 
 .score {
-	position: absolute;
-	z-index: 999;
-	padding: 5px;
-	width: 100vw;
-	height: 100vh;
-	display: flex;
 	justify-content: end;
+	align-items: start;
+	font-size: 40px;
+}
+
+.timer {
+	justify-content: center;
 	align-items: start;
 	font-size: 40px;
 }
