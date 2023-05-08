@@ -1,3 +1,4 @@
+//#region INIT
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -6,17 +7,25 @@ import { FirstPersonControls } from "three/addons/controls/FirstPersonControls.j
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 import Stats from "stats.js";
 import $ from "jquery";
-let {log} = console;
+import Torus from "./components/Torus";
+import{addTarget} from './components/Target'
+let { log } = console;
 
 const stats = new Stats();
 stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild(stats.dom);
 
+//#endregion
+
+//#region SCENE SETUP
+
 let PI = Math.PI;
+let p = console.log
 
 //scene setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+// const controls = new OrbitControls(camera, documment.body)
 const controls = new PointerLockControls(camera, document.body);
 const raycaster = new THREE.Raycaster();
 
@@ -26,6 +35,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 camera.position.set(0, 50, -100);
+camera.rotation.set(-2.7095338077918627, 0.01597627537694578, 3.1342261956640667	);
 
 renderer.render(scene, camera);
 
@@ -46,60 +56,82 @@ let material = new THREE.MeshStandardMaterial({ color: 0x383838 });
 const plane = new THREE.Mesh(geometry, material);
 plane.position.set(0, -20, 0);
 scene.add(plane);
-//
-geometry = new THREE.TorusGeometry(10, 3, 16, 100);
-material = new THREE.MeshStandardMaterial({ color: 0xff6347 });
-const torus = new THREE.Mesh(geometry, material);
-scene.add(torus);
+
+addTorus([0, 0, 0]);
 
 scene.add(player.box);
-// const controls = new OrbitControls(camera, renderer.domElement)
-
-//adds targets
-Array(20).fill().forEach(addStar);
-
-function addStar() {
-  const geometry = new THREE.SphereGeometry(1.5);
-  const material = new THREE.MeshStandardMaterial({ color: "#D22030" });
-  const star = new THREE.Mesh(geometry, material);
-
-  const [x, y, z] = Array(3)
-    .fill()
-    .map(() => THREE.MathUtils.randFloatSpread(100));
-
-  star.position.set(x, y + 50, z - 100);
-  scene.add(star);
-}
 
 //updates game at 60 fps
-async function animate() {
+function animate() {
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 
-  torus.rotation.x += 0.01;
-  torus.rotation.y += 0.01;
-  torus.rotation.z += 0.01;
-
   stats.update();
-
   // await delay(1000/60)
   // animate()
 }
 
 animate();
 
-let targets = [];
-getTargets()
-// let positions = [[0, 50, -100], [10, 100, 70], [-80, -60, -30]]
-let positions = [[0, 50, -100], [0, 50, -105], [-0, 50, -110]]
+//#endregion
+
+//#region GAME
+
+let score = 0;
 let pc = 0;
+let time = 0;
+let targets = [];
+let timeIV = setInterval(timeTick, 1000);
+let speed = 0.1;
+let count = 10;
+
+let positions = [
+  [0, 50, -100],
+  [10, 100, 70],
+  [-80, -60, -30],
+];
+
+let rotations = [
+  [3.1294898990744757, -0.13039790361064346, 3.140018872872886],
+  [-0.2546460804929257,0.07047449746912259,0.01832705546224618],
+  [2.621497327435305, -1.4336409893350595, 2.625556617056756],
+];
+
+let targetPos = [
+	[],
+	[],
+	[]
+];
+
+//adds targets
+Array(count).fill().forEach(() => addTarget(scene));
+
+getTargets();
+
+//#endregion
+
+//#region FUNCTIONS
 
 function getTargets() {
-	scene.traverse((obj) => {
-		if (obj.isMesh && obj.geometry.type == "SphereGeometry") {
-			targets.push(obj);
-		}
-	});
+  scene.traverse((obj) => {
+    if (obj.isMesh && obj.material.color.getHex() === 0xD22030) {
+      targets.push(obj);
+    }
+  });
+}
+
+function moveLocation() {
+	camera.position.set(...positions[++pc % 3]);
+  camera.rotation.set(...rotations[pc % 3]);
+	speed += .05
+	Array(++count).fill().forEach(() => addTarget(scene));
+	getTargets()
+}
+
+function addTorus(position) {
+  let t = new Torus(position);
+  scene.add(t.geo);
+  t.animate();
 }
 
 async function delay(secs) {
@@ -107,22 +139,42 @@ async function delay(secs) {
     setTimeout(() => resolve(""), secs);
   });
 }
-let time = 0;
 
 function timeTick() {
-	time++;
-	$('.timer').html(() => {
-		let m, s;
-		m = Math.floor(time / 60)
-		s = Math.floor(time % 60)
-		console.log()
-		if(s < 10)
-			s = '0' + s
-		return `${m+':'+s}`
-	})
+  time++;
+  $(".timer").html(`${Math.floor(time / 60)}:${(time % 60).toString().padStart(2, "0")}`);
 }
 
-let timeIV = setInterval(timeTick, 1000)
+function clamp(num, min, max) {
+  return num <= min ? min : num >= max ? max : num;
+}
+
+//#endregion
+
+//#region LISTENERS 
+
+document.addEventListener("click", function () {
+  raycaster.setFromCamera(new THREE.Vector2(), camera);
+
+  // Find the closest object that the Raycaster intersects
+  const intersects = raycaster.intersectObjects(scene.children, true);
+
+  // Log the object that the Raycaster intersects
+  if (intersects.length > 0) {
+    let mesh = intersects[0].object;
+    // console.log(mesh)
+    if (mesh.geometry.type == "SphereGeometry") {
+      scene.remove(mesh);
+      targets.pop()
+      $(".score").html("Score: " + ++score);
+    }
+    // if (score >= 20) $(".score").append(" win");
+		if(targets.length-1 == 0) {
+			moveLocation()
+		}
+		console.log(targets.length)
+  }
+});
 
 //scuffed debug
 document.addEventListener("keydown", async (e) => {
@@ -142,16 +194,17 @@ document.addEventListener("keydown", async (e) => {
     case "k":
       if (targets.length) {
         scene.remove(targets[0]);
-        targets.splice(0, 1);
+        targets.pop();
         $(".score").html("Score: " + ++score);
+
+				if(targets.length == 0) {
+					moveLocation()
+				}
       }
       break;
-		case ".":
-			pc++
-			camera.position.set(positions[pc][0],positions[pc][1],positions[pc][2]);
-		  pc = (pc > 2) ? 0:pc; 
-			log(pc)
-			break;
+    case ".":
+      moveLocation()
+      break;
   }
 });
 
@@ -159,29 +212,8 @@ document.addEventListener("click", function () {
   controls.lock();
 });
 
-let score = 0;
-
-document.addEventListener("click", function () {
-  raycaster.setFromCamera(new THREE.Vector2(), camera);
-
-  // Find the closest object that the Raycaster intersects
-  const intersects = raycaster.intersectObjects(scene.children, true);
-
-  // Log the object that the Raycaster intersects
-  if (intersects.length > 0) {
-    let mesh = intersects[0].object;
-    // console.log(mesh)
-    if (mesh.geometry.type == "SphereGeometry") {
-      scene.remove(mesh);
-      targets.splice(0, 1);
-			$(".score").html("Score: " + ++score);
-    }
-    if (score >= 20) $(".score").append(" win");
-  }
-});
-
-function clamp(num, min, max) {
-  return num <= min ? min : num >= max ? max : num;
-}
-
 document.body.requestPointerLock();
+
+//#endregion
+
+export {camera, speed}
