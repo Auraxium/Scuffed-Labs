@@ -26,6 +26,7 @@ let p = console.log
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 // const controls = new OrbitControls(camera, documment.body)
+const cameraBox = new THREE.Box3().setFromCenterAndSize(camera.position, new THREE.Vector3(0.5, 0.5, 0.5));
 const controls = new PointerLockControls(camera, document.body);
 const raycaster = new THREE.Raycaster();
 
@@ -49,7 +50,7 @@ scene.add(pointLight, ambientLight);
 
 const lightHelper = new THREE.PointLightHelper(pointLight);
 const gridHelper = new THREE.GridHelper(200, 50);
-scene.add(lightHelper, gridHelper);
+// scene.add(lightHelper, gridHelper);
 
 let geometry = new THREE.BoxGeometry(50, 2, 50);
 let material = new THREE.MeshStandardMaterial({ color: 0x383838 });
@@ -120,12 +121,32 @@ function getTargets() {
   });
 }
 
+function hitTarget(mesh) {
+    // console.log(mesh)
+    if (mesh.geometry.type == "SphereGeometry") {
+      scene.remove(mesh);
+      targets.pop()
+      $(".score").html("Score: " + ++score);
+			if(targets.length == 0) {
+				moveLocation()
+			}
+			console.log(targets.length)
+		}
+    // if (score >= 20) $(".score").append(" win");
+		
+  
+}
+
 function moveLocation() {
 	camera.position.set(...positions[++pc % 3]);
   camera.rotation.set(...rotations[pc % 3]);
 	speed += .05
 	Array(++count).fill().forEach(() => addTarget(scene));
 	getTargets()
+}
+
+function gameOver() {
+	p('game over')
 }
 
 function addTorus(position) {
@@ -161,18 +182,7 @@ document.addEventListener("click", function () {
 
   // Log the object that the Raycaster intersects
   if (intersects.length > 0) {
-    let mesh = intersects[0].object;
-    // console.log(mesh)
-    if (mesh.geometry.type == "SphereGeometry") {
-      scene.remove(mesh);
-      targets.pop()
-      $(".score").html("Score: " + ++score);
-    }
-    // if (score >= 20) $(".score").append(" win");
-		if(targets.length-1 == 0) {
-			moveLocation()
-		}
-		console.log(targets.length)
+    hitTarget(intersects[0].object)
   }
 });
 
@@ -191,19 +201,17 @@ document.addEventListener("keydown", async (e) => {
     case "r":
       location.reload();
       break;
+		case "v":
+    	speed = 1
+    	break;
     case "k":
       if (targets.length) {
-        scene.remove(targets[0]);
-        targets.pop();
-        $(".score").html("Score: " + ++score);
-
-				if(targets.length == 0) {
-					moveLocation()
-				}
+        hitTarget(targets[0])
       }
       break;
     case ".":
-      moveLocation()
+      camera.position.set(...positions[++pc % 3]);
+  camera.rotation.set(...rotations[pc % 3]);
       break;
   }
 });
@@ -212,8 +220,8 @@ document.addEventListener("click", function () {
   controls.lock();
 });
 
-document.body.requestPointerLock();
+// document.body.requestPointerLock();
 
 //#endregion
 
-export {camera, speed}
+export {camera, speed, cameraBox, gameOver, scene}

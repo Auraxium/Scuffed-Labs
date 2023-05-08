@@ -29,6 +29,15 @@ body > div {
 	display: flex;
 }
 
+.title {
+	position: fixed;
+	background-color: beige;
+	opacity: .7;
+	border: solid 1px;
+	justify-content: center;
+	align-items: center;
+}
+
 .crosshair {
 	color: green;
 	justify-content: center;
