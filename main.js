@@ -8,19 +8,21 @@ import { PointerLockControls } from "three/addons/controls/PointerLockControls.j
 import Stats from "stats.js";
 import $ from "jquery";
 import Torus from "./components/Torus";
-import{addTarget} from './components/Target'
+import { addTarget } from "./components/Target";
+import './components/MenuEvents'
+
 let { log } = console;
 
-const stats = new Stats();
-stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-document.body.appendChild(stats.dom);
+// const stats = new Stats();
+// stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+// document.body.appendChild(stats.dom);
 
 //#endregion
 
 //#region SCENE SETUP
 
 let PI = Math.PI;
-let p = console.log
+let p = console.log;
 
 //scene setup
 const scene = new THREE.Scene();
@@ -36,7 +38,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 camera.position.set(0, 50, -100);
-camera.rotation.set(-2.7095338077918627, 0.01597627537694578, 3.1342261956640667	);
+camera.rotation.set(-2.7095338077918627, 0.01597627537694578, 3.1342261956640667);
 
 renderer.render(scene, camera);
 
@@ -67,9 +69,7 @@ function animate() {
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
 
-  stats.update();
-  // await delay(1000/60)
-  // animate()
+  // stats.update();
 }
 
 animate();
@@ -82,7 +82,7 @@ let score = 0;
 let pc = 0;
 let time = 0;
 let targets = [];
-let timeIV = setInterval(timeTick, 1000);
+let timeIV;
 let speed = 0.1;
 let count = 10;
 
@@ -94,20 +94,11 @@ let positions = [
 
 let rotations = [
   [3.1294898990744757, -0.13039790361064346, 3.140018872872886],
-  [-0.2546460804929257,0.07047449746912259,0.01832705546224618],
+  [-0.2546460804929257, 0.07047449746912259, 0.01832705546224618],
   [2.621497327435305, -1.4336409893350595, 2.625556617056756],
 ];
 
-let targetPos = [
-	[],
-	[],
-	[]
-];
-
-//adds targets
-Array(count).fill().forEach(() => addTarget(scene));
-
-getTargets();
+let targetPos = [[], [], []];
 
 //#endregion
 
@@ -115,38 +106,50 @@ getTargets();
 
 function getTargets() {
   scene.traverse((obj) => {
-    if (obj.isMesh && obj.material.color.getHex() === 0xD22030) {
+    if (obj.isMesh && obj.material.color.getHex() === 0xd22030) {
       targets.push(obj);
     }
   });
 }
 
 function hitTarget(mesh) {
-    // console.log(mesh)
-    if (mesh.geometry.type == "SphereGeometry") {
-      scene.remove(mesh);
-      targets.pop()
-      $(".score").html("Score: " + ++score);
-			if(targets.length == 0) {
-				moveLocation()
-			}
-			console.log(targets.length)
-		}
-    // if (score >= 20) $(".score").append(" win");
-		
-  
+  // console.log(mesh)
+  if (mesh.geometry.type == "SphereGeometry") {
+    scene.remove(mesh);
+    targets.pop();
+    $(".score").html("Score: " + ++score);
+    if (targets.length == 0) {
+      moveLocation();
+    }
+    console.log(targets.length);
+  }
+  // if (score >= 20) $(".score").append(" win");
 }
 
 function moveLocation() {
-	camera.position.set(...positions[++pc % 3]);
+  camera.position.set(...positions[++pc % 3]);
   camera.rotation.set(...rotations[pc % 3]);
-	speed += .05
-	Array(++count).fill().forEach(() => addTarget(scene));
-	getTargets()
+  speed += 0.05;
+  Array(++count)
+    .fill()
+    .forEach(() => addTarget(scene));
+  getTargets();
+}
+
+function startGame() {
+  $(".title").hide();
+  controls.lock();
+$('#audio')[0].play()
+Array(count)
+    .fill()
+    .forEach(() => addTarget(scene));
+  timeIV = setInterval(timeTick, 1000);
+  getTargets();
 }
 
 function gameOver() {
-	p('game over')
+  p("game over");
+  $(".game-over").show();
 }
 
 function addTorus(position) {
@@ -172,7 +175,7 @@ function clamp(num, min, max) {
 
 //#endregion
 
-//#region LISTENERS 
+//#region LISTENERS
 
 document.addEventListener("click", function () {
   raycaster.setFromCamera(new THREE.Vector2(), camera);
@@ -182,7 +185,7 @@ document.addEventListener("click", function () {
 
   // Log the object that the Raycaster intersects
   if (intersects.length > 0) {
-    hitTarget(intersects[0].object)
+    hitTarget(intersects[0].object);
   }
 });
 
@@ -201,27 +204,27 @@ document.addEventListener("keydown", async (e) => {
     case "r":
       location.reload();
       break;
-		case "v":
-    	speed = 1
-    	break;
+    case "v":
+      speed = 1;
+      break;
     case "k":
       if (targets.length) {
-        hitTarget(targets[0])
+        hitTarget(targets[0]);
       }
       break;
     case ".":
       camera.position.set(...positions[++pc % 3]);
-  camera.rotation.set(...rotations[pc % 3]);
+      camera.rotation.set(...rotations[pc % 3]);
       break;
   }
 });
 
-document.addEventListener("click", function () {
-  controls.lock();
-});
+// document.addEventListener("click", function () {
+//   controls.lock();
+// });
 
 // document.body.requestPointerLock();
 
 //#endregion
 
-export {camera, speed, cameraBox, gameOver, scene}
+export { camera, speed, cameraBox, gameOver, scene, startGame, targets};
