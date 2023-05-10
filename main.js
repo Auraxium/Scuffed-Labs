@@ -9,9 +9,9 @@ import Stats from "stats.js";
 import $ from "jquery";
 import Torus from "./components/Torus";
 import { addTarget } from "./components/Target";
-import './components/MenuEvents'
-import axios from 'axios'
-import {port} from './components/port'
+import "./components/MenuEvents";
+import axios from "axios";
+import { port } from "./components/port";
 
 // const stats = new Stats();
 // stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -23,6 +23,10 @@ import {port} from './components/port'
 
 let PI = Math.PI;
 let p = console.log;
+
+let get = localStorage.getItem.bind(localStorage);
+let set = localStorage.setItem.bind(localStorage);
+let rmv = localStorage.removeItem.bind(localStorage);
 
 //scene setup
 const scene = new THREE.Scene();
@@ -62,7 +66,7 @@ scene.add(plane);
 
 addTorus([0, 0, 0]);
 
-scene.add(player.box);
+// scene.add(player.box);
 
 //updates game at 60 fps
 function animate() {
@@ -85,7 +89,7 @@ let targets = [];
 let timeIV;
 let speed = 0.1;
 let count = 10;
-let account = localStorage.getItem('account') ? JSON.parse(localStorage.getItem('account')) : {name: Math.random() * 1000};
+let name = localStorage.getItem("account") ? JSON.parse(get("account")).username : "YOU";
 
 let positions = [
   [0, 50, -100],
@@ -136,22 +140,66 @@ function moveLocation() {
 }
 
 function startGame() {
-  $(".title").hide();
-  controls.lock();
-// $('#audio')[0].play()
-Array(count)
+  $("menu").hide();
+  scene.traverse((obj) => {
+    if (obj.isMesh && obj.material.color.getHex() === 0xd22030) {
+      scene.remove(obj);
+    }
+  });
+
+  targets = [];
+  speed = 0.1;
+  count = 10;
+  timeIV = setInterval(timeTick, 1000);
+  time = 0;
+  pc = 0;
+  camera.position.set(...positions[0]);
+  camera.rotation.set(...rotations[0]);
+
+  Array(count)
     .fill()
     .forEach(() => addTarget(scene));
-  timeIV = setInterval(timeTick, 1000);
+  controls.lock();
   getTargets();
+  $("#audio")[0].play();
 }
 
-function gameOver() {
+async function gameOver() {
+  if (!timeIV) return;
+
   p("game over");
-  $(".game-over").css('display', 'flex');
-  let scores = [{
-    // name: JSON.parse(
-  }]
+  clearInterval(timeIV);
+  timeIV = null;
+  controls.unlock();
+  $(".game-over").css("display", "flex");
+
+  let account;
+
+  if (get("account")) {
+    account = JSON.stringify(get("account"));
+    account["time_palyed"] += time;
+    account["hits"] += score;
+    if (account["highscore"] < score) account["highscore"] = score;
+    await axios.post(port + "/highscore", account);
+  }
+
+  let rank = { username: name, highscore: score, gold: true };
+  let { data } = await axios(port + "/getScores");
+  let board = [...data, rank].sort((a, b) => b.score - a.score);
+
+  let str = "";
+  for (let i = 0; i < board.length; i++) {
+    let el = board[i];
+    str += `
+  <div class="score">
+    <div class="me-3 ${el.gold ? "text-warning" : ""}">${el.name}</div>
+    <div class="${el.gold ? "text-warning" : ""}">${el.score}</div>
+  </div>
+  `;
+    $("#scores").html(str);
+  }
+
+  console.log(data);
 }
 
 function addTorus(position) {
@@ -229,4 +277,4 @@ document.addEventListener("keydown", async (e) => {
 
 //#endregion
 
-export { camera, speed, cameraBox, gameOver, scene, startGame, targets};
+export { camera, speed, cameraBox, gameOver, scene, startGame, targets, timeIV, controls };

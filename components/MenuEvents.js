@@ -1,10 +1,19 @@
 import $ from 'jquery'
-import {startGame} from '../main'
+import {startGame, timeIV, controls} from '../main'
 import axios from 'axios'
 import {port} from './port'
 import { v4 as uuidv4 } from 'uuid';
 
 let audio;
+let get = localStorage.getItem.bind(localStorage);
+let set = localStorage.setItem.bind(localStorage);
+let rmv = localStorage.removeItem.bind(localStorage);
+
+async function getScores() {
+  let {data: scores} = await axios(port + '/getScores')
+  console.log(scores)
+  return scores;
+}
 
 $('.title').on('click', e => {
   // e.stopPropagation()
@@ -15,6 +24,10 @@ $('#play').on('click', e => {
   $('[menu]').hide()
   $('[ui]').show()
   startGame()
+})
+
+$('#lb').on('click', async e => {
+  await getScores()
 })
 
 $('#login').on('click', e => {
@@ -33,17 +46,29 @@ $('#logout').on('click', e => {
   window.location.reload()
 })
 
+$(document).on('click', e => {
+  if(timeIV)
+    controls.lock()
+})
+
 $(async () => {
+
   if(localStorage.getItem('uuid')) {
-    let account = await axios.post(port + '/getToken', {uuid: localStorage.getItem('uuid')}).catch(err => null)
+    let {data: account} = await axios.post(port + '/getToken', {uuid: localStorage.getItem('uuid')}).catch(err => null)
     localStorage.removeItem('uuid');
-    console.log(account);
-    if(!account || !account['data']['username'])
+    
+    if(!account || !account['username'])
       return;
-    localStorage.setItem('account', JSON.stringify(account['data']));
+
+    account['highscore'] = 0;  
+    account['time_played'] = 0;  
+    account['hits'] = 0;  
+
+    localStorage.setItem('account', JSON.stringify(account));
+    axios.post(port + '/saceAccount', account)
     $('#login').html(account.username)
     $('#logout').show()
-  }
+  } else 
 
   if(localStorage.getItem('account')) {
     $('#login').html(JSON.parse(localStorage.getItem('account')).username);
@@ -54,6 +79,7 @@ $(async () => {
   audio = $('#audio')[0];
   audio.currentTime = localStorage.getItem('audio') || 0;
   audio.loop = true
+  audio.volume = .5
   // audio.play()
 })
 

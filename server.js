@@ -1,11 +1,11 @@
-import express from 'express'
-const app = express()
-import cors from 'cors'
-import {google} from 'googleapis'
-import axios from 'axios'
-import mongoose from 'mongoose'
+import express from "express";
+const app = express();
+import cors from "cors";
+import { google } from "googleapis";
+import axios from "axios";
+import mongoose from "mongoose";
 
-const uri = 'mongodb+srv://scuffedlabs:xulq9FQcUlLQMxuq@cluster0.cxornph.mongodb.net/?retryWrites=true&w=majority'
+const uri = "mongodb+srv://scuffedlabs:xulq9FQcUlLQMxuq@cluster0.cxornph.mongodb.net/?retryWrites=true&w=majority";
 
 mongoose
   .connect(uri, {
@@ -15,20 +15,16 @@ mongoose
   .then(() => console.log("connected to database"))
   .catch((err) => console.log(err));
 
-const scoreModel = mongoose.model("Score", new mongoose.Schema({_id: mongoose.Mixed, data: {}}))
+const accountModel = mongoose.model("Score", new mongoose.Schema({ _id: {}, username: {}, highscore: {}, time_played: {}, hits: {} }));
 
-const hostUrl = process.env.HURL || 'http://localhost:9090'
+const hostUrl = process.env.HURL || "http://localhost:9090";
 
-const googleID = '808605773432-3qrasjkbl3sh8jc3p185u336v90pthb7.apps.googleusercontent.com'
-const googleCS = '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'
+const googleID = "808605773432-3qrasjkbl3sh8jc3p185u336v90pthb7.apps.googleusercontent.com";
+const googleCS = "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";
 
-const GOauth = new google.auth.OAuth2(
-  googleID,
-  googleCS,
-   hostUrl+ "/callback"
-);
+const GOauth = new google.auth.OAuth2(googleID, googleCS, hostUrl + "/callback");
 
-let save = {}
+let save = {};
 
 app.use(
   cors({
@@ -41,59 +37,83 @@ app.use(
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.sendFile('./index.html')
-})
+app.get("/", (req, res) => {
+  res.sendFile("./index.html");
+});
 
-app.get('/test', (req, res) => {
-  res.send('yes hi hello')
-})
+app.get("/test", (req, res) => {
+  res.send("yes hi hello");
+});
 
-app.post('/hiscore', async(req, res) => {
-  let score = await scoreModel.findById(req.body._id)
-  if(!score) 
-    score = new scoreModel(req.body)
+
+
+app.get("/getScores", async (req, res) => {
+  accountModel.find().then((scores) => res.json(scores));
+});
+
+app.post("/getAccount", async (req, res) => {
+  accountModel.findById(req.body._id)
+  .then(acc => {
+    if(!acc) {
+
+    }
+  })
+});
+
+app.post("/saveAccount", async (req, res) => {
+  let score = await accountModel.findById(req.body._id);
+  if (!score) score = new accountModel(req.body);
   score.data = req.body;
-  score.save()
-  return res.send('score saved')
-})
+  score.save();
+  return res.send("score saved");
+});
 
-app.post('/oauth', (req,res) => {
-  save[req.body.uuid] = {href: req.body.href};
+// app.post("/saveAccount", async (req, res) => {
+//   accountModel.findById(req.body._id)
+//   .then(acc => {
+//     acc.data = req.body;
+//     acc.save()
+//     return res.send('done')
+//   })
+// });
+
+app.post("/oauth", (req, res) => {
+  save[req.body.uuid] = { href: req.body.href };
   const url = GOauth.generateAuthUrl({
-    access_type: 'offline',
-    scope: [
-      "https://www.googleapis.com/auth/userinfo.profile",
-      "https://www.googleapis.com/auth/userinfo.email",
-    ],
+    access_type: "offline",
+    scope: ["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"],
     include_granted_scopes: true,
     state: req.body.uuid,
-  })
-  res.send(url)
-})
+  });
+  res.send(url);
+});
 
-app.get('/callback', async (req,res) => {
+app.get("/callback", async (req, res) => {
   let state = req.query.state;
   let response = await GOauth.getToken(req.query.code);
-  let ax = await axios(
-    "https://people.googleapis.com/v1/people/me?personFields=names",
-    {
-      headers: {
-        Authorization: `Bearer ${response.tokens.access_token}`,
-      },
-    }
-  );
-  save[state]["googleId"] = ax.data.names[0].metadata.source.id;
+  let ax = await axios("https://people.googleapis.com/v1/people/me?personFields=names", {
+    headers: {
+      Authorization: `Bearer ${response.tokens.access_token}`,
+    },
+  });
+
+  let acc = await accountModel.findById(ax.data.names[0].metadata.source.id);
+  if(acc) {
+    save[state]['username']
+  }
+
+  save[state]["_id"] = ax.data.names[0].metadata.source.id;
   save[state]["username"] = ax.data.names[0].displayName;
   res.redirect(save[state]["href"]);
-})
+});
 
-app.post('/getToken', (req, res) => {
+app.post("/getToken", (req, res) => {
   let token = save[req.body.uuid];
+  delete token["href"];
   console.log(token);
   delete save[req.body.uuid];
   return res.json(token);
-})
+});
 
 const PORT = process.env.PORT || 9090;
-app.listen(PORT, () => console.log('running on port: ' + PORT));
+app.listen(PORT, () => console.log("running on port: " + PORT));
