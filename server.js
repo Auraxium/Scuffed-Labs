@@ -2,6 +2,7 @@ import express from 'express'
 const app = express()
 import cors from 'cors'
 import {google} from 'googleapis'
+import axios from 'axios'
 
 const hostUrl = process.env.HURL || 'http://localhost:9090'
 
@@ -17,7 +18,6 @@ const GOauth = new google.auth.OAuth2(
 
 let save = {}
 
-
 app.use(
   cors({
     origin: "*",
@@ -29,7 +29,6 @@ app.use(
 
 app.use(express.json());
 
-
 app.get('/', (req, res) => {
   res.sendFile('./index.html')
 })
@@ -39,7 +38,7 @@ app.get('/test', (req, res) => {
 })
 
 app.post('/oauth', (req,res) => {
-  save[req.body.uuid] = {origin: req.body.origin};
+  save[req.body.uuid] = {href: req.body.href};
   const url = GOauth.generateAuthUrl({
     access_type: 'offline',
     scope: [
@@ -49,7 +48,7 @@ app.post('/oauth', (req,res) => {
     include_granted_scopes: true,
     state: req.body.uuid,
   })
-  req.send(url)
+  res.send(url)
 })
 
 app.get('/callback', async (req,res) => {
@@ -63,10 +62,10 @@ app.get('/callback', async (req,res) => {
       },
     }
   );
-  save[session]["googleId"] = ax.data.names[0].metadata.source.id;
-  save[session]["username"] = ax.data.names[0].displayName;
-  save[session]["now"] = Date.now();
-  res.redirect(save[session]["origin"]);
+  save[state]["googleId"] = ax.data.names[0].metadata.source.id;
+  save[state]["username"] = ax.data.names[0].displayName;
+  save[state]["now"] = Date.now();
+  res.redirect(save[state]["href"]);
 })
 
 app.post('/getToken', (req, res) => {
@@ -75,8 +74,6 @@ app.post('/getToken', (req, res) => {
   delete save[req.body.uuid];
   return res.json(token);
 })
-
-
 
 const PORT = process.env.PORT || 9090;
 app.listen(PORT, () => console.log('running on port: ' + PORT));
