@@ -1,5 +1,7 @@
 import $ from 'jquery'
 import {startGame} from '../main'
+import axios from 'axios'
+import {port} from './port'
 
 let audio;
 
@@ -9,16 +11,25 @@ $('.title').on('click', e => {
 
 $('#play').on('click', e => {
   console.log('playing');
-  $('.title').hide()
+  $('[menu]').hide()
   $('[ui]').show()
   startGame()
+})
+
+$('#login').on('click', e => {
+  if(localStorage.getItem('Account')) {
+    //logic
+    return;
+  } 
+  // axios.get(port +'/')
+  console.log(port)
 })
 
 $(() => {
   audio = $('#audio')[0];
   audio.currentTime = localStorage.getItem('audio') || 0;
   audio.loop = true
-  audio.play()
+  // audio.play()
 })
 
 $(window).on('unload', e => {

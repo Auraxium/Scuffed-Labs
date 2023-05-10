@@ -11,8 +11,6 @@ import Torus from "./components/Torus";
 import { addTarget } from "./components/Target";
 import './components/MenuEvents'
 
-let { log } = console;
-
 // const stats = new Stats();
 // stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
 // document.body.appendChild(stats.dom);
@@ -139,7 +137,7 @@ function moveLocation() {
 function startGame() {
   $(".title").hide();
   controls.lock();
-$('#audio')[0].play()
+// $('#audio')[0].play()
 Array(count)
     .fill()
     .forEach(() => addTarget(scene));
