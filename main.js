@@ -10,6 +10,8 @@ import $ from "jquery";
 import Torus from "./components/Torus";
 import { addTarget } from "./components/Target";
 import './components/MenuEvents'
+import axios from 'axios'
+import {port} from './components/port'
 
 // const stats = new Stats();
 // stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -83,6 +85,7 @@ let targets = [];
 let timeIV;
 let speed = 0.1;
 let count = 10;
+let account = localStorage.getItem('account') ? JSON.parse(localStorage.getItem('account')) : {name: Math.random() * 1000};
 
 let positions = [
   [0, 50, -100],
@@ -95,8 +98,6 @@ let rotations = [
   [-0.2546460804929257, 0.07047449746912259, 0.01832705546224618],
   [2.621497327435305, -1.4336409893350595, 2.625556617056756],
 ];
-
-let targetPos = [[], [], []];
 
 //#endregion
 
@@ -147,7 +148,10 @@ Array(count)
 
 function gameOver() {
   p("game over");
-  $(".game-over").show();
+  $(".game-over").css('display', 'flex');
+  let scores = [{
+    // name: JSON.parse(
+  }]
 }
 
 function addTorus(position) {

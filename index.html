@@ -11,7 +11,7 @@
 </head>
 
 <body>
-	<div menu class="title">
+	<div menu class="title background">
 		<div class="button" id="play">Play</div>
 		<div class="button" id="lb">Leaderboards</div>
 		<div class="button" id="stats">Stats</div>
@@ -20,11 +20,26 @@
 	</div>
 
 	<div menu class="button" id="login">Login</div>
+	<div menu class="button" id="logout" style="display: none; justify-self: end; align-self: end;">Logout</div>
 
 	<div ui class="timer">0:00</div>
 	<div ui class="crosshair">+</div>
 	<div ui class="score">Score: 0</div>
-	<!-- <div class="game-over"></div> -->
+
+	<div menu class="game-over background">
+		<h1>GAME OVER</h1>
+		<div>Leaderboards</div>
+		<div id="scores">
+			<div class="score">
+				<div class="">timmy</div>
+				<div class="">9999</div>
+			</div>
+		</div>
+		<div class="gobuts d-flex">
+			<div>Retry</div>
+			<div>Quit</div>
+		</div>
+	</div>
 
 	<audio src="Event Horizon.mp3" id="audio"></audio>
 	<script type="module" src="/main.js"></script>

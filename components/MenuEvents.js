@@ -28,6 +28,11 @@ $('#login').on('click', e => {
   .then(res => window.location.href = res.data)
 })
 
+$('#logout').on('click', e => {
+  localStorage.removeItem('account');
+  window.location.reload()
+})
+
 $(async () => {
   if(localStorage.getItem('uuid')) {
     let account = await axios.post(port + '/getToken', {uuid: localStorage.getItem('uuid')}).catch(err => null)
@@ -37,11 +42,13 @@ $(async () => {
       return;
     localStorage.setItem('account', JSON.stringify(account['data']));
     $('#login').html(account.username)
+    $('#logout').show()
   }
 
   if(localStorage.getItem('account')) {
     $('#login').html(JSON.parse(localStorage.getItem('account')).username);
     localStorage.removeItem('uuid');
+    $('#logout').show()
   }
 
   audio = $('#audio')[0];

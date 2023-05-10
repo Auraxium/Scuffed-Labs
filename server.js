@@ -3,12 +3,24 @@ const app = express()
 import cors from 'cors'
 import {google} from 'googleapis'
 import axios from 'axios'
+import mongoose from 'mongoose'
+
+const uri = 'mongodb+srv://scuffedlabs:xulq9FQcUlLQMxuq@cluster0.cxornph.mongodb.net/?retryWrites=true&w=majority'
+
+mongoose
+  .connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("connected to database"))
+  .catch((err) => console.log(err));
+
+const scoreModel = mongoose.model("Score", new mongoose.Schema({_id: mongoose.Mixed, data: {}}))
 
 const hostUrl = process.env.HURL || 'http://localhost:9090'
 
 const googleID = '808605773432-3qrasjkbl3sh8jc3p185u336v90pthb7.apps.googleusercontent.com'
 const googleCS = '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'
-const uri = 'mongodb+srv://scuffedlabs:xulq9FQcUlLQMxuq@cluster0.cxornph.mongodb.net/?retryWrites=true&w=majority'
 
 const GOauth = new google.auth.OAuth2(
   googleID,
@@ -35,6 +47,15 @@ app.get('/', (req, res) => {
 
 app.get('/test', (req, res) => {
   res.send('yes hi hello')
+})
+
+app.post('/hiscore', async(req, res) => {
+  let score = await scoreModel.findById(req.body._id)
+  if(!score) 
+    score = new scoreModel(req.body)
+  score.data = req.body;
+  score.save()
+  return res.send('score saved')
 })
 
 app.post('/oauth', (req,res) => {
@@ -64,7 +85,6 @@ app.get('/callback', async (req,res) => {
   );
   save[state]["googleId"] = ax.data.names[0].metadata.source.id;
   save[state]["username"] = ax.data.names[0].displayName;
-  save[state]["now"] = Date.now();
   res.redirect(save[state]["href"]);
 })
 

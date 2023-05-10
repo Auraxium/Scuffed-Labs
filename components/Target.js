@@ -28,7 +28,7 @@ export function addTarget(
   scene,
   position = Array(3)
     .fill()
-    .map(() => THREE.MathUtils.randFloatSpread(150))
+    .map(() => THREE.MathUtils.randFloatSpread(110))
 ) {
   let t = new Target();
   t.geo.position.set(...position);

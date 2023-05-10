@@ -31,6 +31,13 @@ body > div {
 }
 
 .title {
+	
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.background {
 	width: 80vw;
 	height: 80vh;
 	justify-self: center;
@@ -39,9 +46,25 @@ body > div {
 	opacity: .8;
 	border: solid 1px;
 	display: flex;
+}
+
+.game-over {
+	display: none;
 	flex-direction: column;
-	justify-content: space-around;
 	align-items: center;
+}
+
+.scores {
+	height: 500px;
+	width: 75%;
+	overflow: scroll;
+}
+
+.score {
+	height: 75px;
+	width: 100%;
+	display: flex;
+	justify-content: space-around;
 }
 
 #lb {
@@ -52,6 +75,10 @@ body > div {
 .button {
 	font-size: 40px;
 	padding: 0 5px
+}
+
+.button:hover {
+	background-color: grey;
 }
 
 #login {
