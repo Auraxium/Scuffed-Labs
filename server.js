@@ -3,6 +3,21 @@ const app = express()
 import cors from 'cors'
 import {google} from 'googleapis'
 
+const hostUrl = process.env.HURL || 'http://localhost:9090'
+
+const googleID = '808605773432-3qrasjkbl3sh8jc3p185u336v90pthb7.apps.googleusercontent.com'
+const googleCS = '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'
+const uri = 'mongodb+srv://scuffedlabs:xulq9FQcUlLQMxuq@cluster0.cxornph.mongodb.net/?retryWrites=true&w=majority'
+
+const GOauth = new google.auth.OAuth2(
+  googleID,
+  googleCS,
+   hostUrl+ "/callback"
+);
+
+let save = {}
+
+
 app.use(
   cors({
     origin: "*",
@@ -12,9 +27,7 @@ app.use(
   })
 );
 
-const googleID = ''
-const googleCS = ''
-
+app.use(express.json());
 
 
 app.get('/', (req, res) => {
@@ -22,16 +35,48 @@ app.get('/', (req, res) => {
 })
 
 app.get('/test', (req, res) => {
-  res.json({l: 'yes hi hello'})
+  res.send('yes hi hello')
 })
 
-app.get('/oauth', (req,res) => {
-
+app.post('/oauth', (req,res) => {
+  save[req.body.uuid] = {origin: req.body.origin};
+  const url = GOauth.generateAuthUrl({
+    access_type: 'offline',
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ],
+    include_granted_scopes: true,
+    state: req.body.uuid,
+  })
+  req.send(url)
 })
 
-app.get('/callback', (req,res) => {
-
+app.get('/callback', async (req,res) => {
+  let state = req.query.state;
+  let response = await GOauth.getToken(req.query.code);
+  let ax = await axios(
+    "https://people.googleapis.com/v1/people/me?personFields=names",
+    {
+      headers: {
+        Authorization: `Bearer ${response.tokens.access_token}`,
+      },
+    }
+  );
+  save[session]["googleId"] = ax.data.names[0].metadata.source.id;
+  save[session]["username"] = ax.data.names[0].displayName;
+  save[session]["now"] = Date.now();
+  res.redirect(save[session]["origin"]);
 })
+
+app.post('/getToken', (req, res) => {
+  let token = save[req.body.uuid];
+  console.log(token);
+  delete save[req.body.uuid];
+  return res.json(token);
+})
+
+
 
 const PORT = process.env.PORT || 9090;
 app.listen(PORT, () => console.log('running on port: ' + PORT));

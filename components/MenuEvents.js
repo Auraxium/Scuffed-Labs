@@ -5,6 +5,8 @@ import {port} from './port'
 
 let audio;
 
+
+
 $('.title').on('click', e => {
   // e.stopPropagation()
 })
@@ -21,7 +23,7 @@ $('#login').on('click', e => {
     //logic
     return;
   } 
-  // axios.get(port +'/')
+  axios.get(port +'/')
   console.log(port)
 })
 
