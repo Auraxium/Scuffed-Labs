@@ -1,11 +1,12 @@
-import axios from "axios";
-let port; 
+// import axios from "axios";
+// let port; 
+// let ports = ["http://localhost:9090"];
 
-["http://localhost:9090"].some(async (el) => {
-  port = await axios.get(el + "/test").catch((err) => null);
-  console.log(port)
-  if (port) return port = el;
-});
+// // ["http://localhost:9090"].some(async (el) => {
+// //   port = await axios.get(el + "/test").catch((err) => null);
+// //   console.log(port)
+// //   if (port) return port = el;
+// // });
 
 
 // run();
@@ -19,12 +20,17 @@ let port;
 //     break;
     
 //   }
+//   if(!port)
+//     port = "http://localhost:9090"
 // }
 
-// console.log('test')
+// // console.log('test')
 
-// if(localStorage.getItem('uuid')) {
-//   axios.post(port)
-// }
+// // if(localStorage.getItem('uuid')) {
+// //   axios.post(port)
+// // }
 
-export {port} 
+// export {port} 
+
+const port = "http://localhost:9090"
+export  {port}

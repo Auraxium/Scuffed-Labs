@@ -148,6 +148,7 @@ function startGame() {
   });
 
   targets = [];
+  score = 0;
   speed = 0.1;
   count = 10;
   timeIV = setInterval(timeTick, 1000);
@@ -159,9 +160,14 @@ function startGame() {
   Array(count)
     .fill()
     .forEach(() => addTarget(scene));
+
+  $("[menu]").hide();
+  $("[ui]").show();
+  $(".score").html("Score: 0");
   controls.lock();
   getTargets();
   $("#audio")[0].play();
+  $("#audio")[0].volume = .3;
 }
 
 async function gameOver() {
@@ -176,15 +182,17 @@ async function gameOver() {
   let account;
 
   if (get("account")) {
-    account = JSON.stringify(get("account"));
-    account["time_palyed"] += time;
+    account = JSON.parse(get("account"));
+    account["time_played"] += time;
     account["hits"] += score;
     if (account["highscore"] < score) account["highscore"] = score;
-    await axios.post(port + "/highscore", account);
+    set('account', JSON.stringify(account))
+    await axios.post(port + "/saveAccount", account);
   }
 
   let rank = { username: name, highscore: score, gold: true };
   let { data } = await axios(port + "/getScores");
+  data.length = 9;
   let board = [...data, rank].sort((a, b) => b.score - a.score);
 
   let str = "";
@@ -192,8 +200,8 @@ async function gameOver() {
     let el = board[i];
     str += `
   <div class="score">
-    <div class="me-3 ${el.gold ? "text-warning" : ""}">${el.name}</div>
-    <div class="${el.gold ? "text-warning" : ""}">${el.score}</div>
+    <div class="me-3 ${el.gold ? "text-warning" : ""}">${el.username}</div>
+    <div class="${el.gold ? "text-warning" : ""}">${el.highscore}</div>
   </div>
   `;
     $("#scores").html(str);

@@ -4,6 +4,7 @@ import cors from "cors";
 import { google } from "googleapis";
 import axios from "axios";
 import mongoose from "mongoose";
+const p = console.log
 
 const uri = "mongodb+srv://scuffedlabs:xulq9FQcUlLQMxuq@cluster0.cxornph.mongodb.net/?retryWrites=true&w=majority";
 
@@ -45,37 +46,28 @@ app.get("/test", (req, res) => {
   res.send("yes hi hello");
 });
 
-
-
 app.get("/getScores", async (req, res) => {
   accountModel.find().then((scores) => res.json(scores));
 });
 
 app.post("/getAccount", async (req, res) => {
+  console.log('this is getAccount:')
+  console.log(req.body)
   accountModel.findById(req.body._id)
   .then(acc => {
-    if(!acc) {
-
-    }
+    if(!acc) return res.send(null)
+    return res.json(acc)
   })
 });
 
 app.post("/saveAccount", async (req, res) => {
   let score = await accountModel.findById(req.body._id);
+  console.log(req.body)
   if (!score) score = new accountModel(req.body);
   score.data = req.body;
   score.save();
   return res.send("score saved");
 });
-
-// app.post("/saveAccount", async (req, res) => {
-//   accountModel.findById(req.body._id)
-//   .then(acc => {
-//     acc.data = req.body;
-//     acc.save()
-//     return res.send('done')
-//   })
-// });
 
 app.post("/oauth", (req, res) => {
   save[req.body.uuid] = { href: req.body.href };
@@ -97,13 +89,21 @@ app.get("/callback", async (req, res) => {
     },
   });
 
-  let acc = await accountModel.findById(ax.data.names[0].metadata.source.id);
-  if(acc) {
-    save[state]['username']
-  }
-
   save[state]["_id"] = ax.data.names[0].metadata.source.id;
   save[state]["username"] = ax.data.names[0].displayName;
+
+  let acc = await accountModel.findById(ax.data.names[0].metadata.source.id);
+  p('gomell')
+  p(acc)
+
+  if(acc) {
+    if(acc.data) acc = acc.data
+    save[state]["username"] = acc.username;
+    save[state]["highscore"] = acc.highscore;
+    save[state]["hits"] = acc.hits;
+    save[state]["time_played"] = acc.time_played;
+  }
+
   res.redirect(save[state]["href"]);
 });
 
