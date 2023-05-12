@@ -14,7 +14,7 @@ function Target() {
     let m = camera.position.distanceTo(star.position);
     // console.log(star)
 
-    if (m && m < 0.5 && m > -0.5 && Date.now() - now > 3000) {
+    if (m && m < 5 && m > -5 && Date.now() - now > 3000) {
       if($('.game-over').is(':visible'))
         return;
       console.log('this was the m: ' + m)

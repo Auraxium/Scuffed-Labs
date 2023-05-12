@@ -53,16 +53,24 @@ $("#lb").on("click", async (e) => {
   $(".tlb-scores").html(str);
 });
 
+$("#stats").on("click", (e) => {
+  $('[menu]').hide()
+  $('#stats-menu').show()
+  let account = JSON.parse(get('account'))
+  let str = `
+    <div class="mb-1">Highscore: \t ${account['highscore']}</div>
+    <div class="mb-1">Total Hits: \t ${account['hits']}</div>
+    <div class="mb-1">Time Played: \t ${account['time_played']}</div>
+  `
+  $('#s').html(str)
+});
+
 $("#retry").on("click", (e) => {
   startGame();
 });
 
 $("#quit").on("click", (e) => {
   location.reload();
-});
-
-$("#lb").on("click", async (e) => {
-  await getScores();
 });
 
 $("#login").on("click", (e) => {

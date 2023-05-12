@@ -106,6 +106,19 @@ body > div {
 	justify-self: end;
 }
 
+#s {
+	font-size: 22px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.t-stats {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
 .crosshair {
 	color: green;
 	font-size: 25px;

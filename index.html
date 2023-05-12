@@ -16,7 +16,7 @@
 		<div class="button" id="play">Play</div>
 		<div class="button" id="lb">Leaderboards</div>
 		<div class="button" id="stats">Stats</div>
-		<div class="button" id="options">Options</div>
+		<!-- <div class="button" id="options">Options</div> -->
 		<!-- <div class="button" id="lb">Quit</div> -->
 	</div>
 
@@ -46,6 +46,15 @@
 
 		</div>
 		<div class="button" onclick="$('[menu]').hide(); $('.title').show()">Back</div>
+	</div>
+
+	<div menu style="display: none;" class="t-stats background" id="stats-menu">
+		<h1 class="mb-3">STATS</h1>
+		<div class="gb-2" id="s">
+
+		</div>
+		
+		<div class="button mt-2" onclick="$('[menu]').hide(); $('.title').show()">Back</div>
 	</div>
 
 	<audio src="Event Horizon.mp3" id="audio"></audio>
