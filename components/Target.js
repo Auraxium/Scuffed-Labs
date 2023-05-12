@@ -6,7 +6,7 @@ const geometry = new THREE.SphereGeometry(1.5);
 const material = new THREE.MeshStandardMaterial({ color: "#D22030" });
 
 function Target() {
-  const star = new THREE.Mesh(geometry, material);
+  let star = new THREE.Mesh(geometry, material);
   let now = Date.now()
   this.geo = star;
   this.animate = function animate() {
@@ -18,7 +18,7 @@ function Target() {
       star = null;
 
     // let m = distance.x + distance.y + distance.z;
-    if (star.parent && m && m < 0.5 && m > -0.5 && Date.now() - now > 3000) {
+    if (m && m < 0.5 && m > -0.5 && Date.now() - now > 3000) {
       if($('.game-over').is(':visible'))
         return;
       console.log('this was the m: ' + m)
