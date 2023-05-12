@@ -11,7 +11,7 @@ import Torus from "./components/Torus";
 import { addTarget } from "./components/Target";
 import "./components/MenuEvents";
 import axios from "axios";
-import { port } from "./components/port";
+import port from "./components/port";
 
 // const stats = new Stats();
 // stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -46,7 +46,7 @@ camera.rotation.set(-2.7095338077918627, 0.01597627537694578, 3.1342261956640667
 
 renderer.render(scene, camera);
 
-// const spaceTexture = new THREE.TextureLoader().load("space.jpeg");
+const spaceTexture = new THREE.TextureLoader().load("space.jpeg");
 // scene.background = spaceTexture;
 
 const pointLight = new THREE.PointLight(0xffffff);
@@ -100,8 +100,18 @@ let positions = [
 let rotations = [
   [3.1294898990744757, -0.13039790361064346, 3.140018872872886],
   [-0.2546460804929257, 0.07047449746912259, 0.01832705546224618],
-  [2.621497327435305, -1.4336409893350595, 2.625556617056756],
+  [1.849602546449333, -0.7145598994559652, 1.9826623581145912],
 ];
+
+_x
+: 
+
+
+_y
+: 
+_z
+: 
+1.9826623581145912
 
 //#endregion
 
@@ -204,18 +214,23 @@ async function gameOver() {
 
   let rank = { username: name, highscore: score, gold: true };
   let { data } = await axios(port + "/getScores");
-  data.length = 9;
-  let board = [...data, rank].sort((a, b) => b.score - a.score);
 
+  if(data.length > 9)
+    data.length = 9;
+
+  let board = [...data, rank].sort((a, b) => b.score - a.score);
+  console.log(board)
   let str = "";
   let gold;
   for (let i = 0; i < board.length; i++) {
     let el = board[i];
-    if (el["gold"]) gold = i;
+
+    if (el["gold"]) 
+      gold = i;
 
     str += `
-      <div class="score text-warning">
-        <div class="me-3" id="l${i}">${el.username}</div>
+      <div class="lb-score text-warning">
+        <div class="me-3" id="l${i}">${el.username}:</div>
         <div class="" id="l${i + 101}">${el.highscore}</div>
       </div>
     `;
@@ -253,7 +268,7 @@ function clamp(num, min, max) {
 
 //#region LISTENERS
 
-document.addEventListener("click", function () {
+document.addEventListener("pointerdown", function () {
   raycaster.setFromCamera(new THREE.Vector2(), camera);
 
   // Find the closest object that the Raycaster intersects

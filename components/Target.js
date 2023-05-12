@@ -14,9 +14,6 @@ function Target() {
     let m = camera.position.distanceTo(star.position);
     // console.log(star)
 
-
-
-    // let m = distance.x + distance.y + distance.z;
     if (m && m < 0.5 && m > -0.5 && Date.now() - now > 3000) {
       if($('.game-over').is(':visible'))
         return;
@@ -28,11 +25,12 @@ function Target() {
 
     let direction = distance.normalize();
     star.position.add(direction.multiplyScalar(speed));
-    requestAnimationFrame(animate);
 
     if(!star.parent)
-      star = null;  
-  };
+      return star = null;
+
+    requestAnimationFrame(animate);
+    };
 }
 
 export function addTarget(

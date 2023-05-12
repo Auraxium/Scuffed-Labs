@@ -30,6 +30,7 @@ body > div {
 	z-index: 999;
 }
 
+
 .title {
 	
 	flex-direction: column;
@@ -56,17 +57,20 @@ body > div {
 
 .scores {
 	flex-basis: 80;
-	height: 500px;
+	height: 100%;
 	width: 75%;
 	overflow: scroll;
 }
 
-.score {
+.lb-score {
 	height: 75px;
 	width: 100%;
-	background-color: rgb(37, 37, 37);
+	font-size: 22px;
+	border-bottom: solid 2px;
 	display: flex;
 	justify-content: space-around;
+	align-items: center;
+	background-color: rgb(53, 53, 53);
 }
 
 .gobuts {
@@ -76,6 +80,12 @@ body > div {
 #lb {
 	/* align-self: start; */
 	/* justify-self: start; */
+}
+
+.lbm {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .button {
@@ -89,6 +99,11 @@ body > div {
 
 #login {
 	align-self: end;
+}
+
+#logout {
+	align-self: end;
+	justify-self: end;
 }
 
 .crosshair {
@@ -110,4 +125,6 @@ body > div {
 
 [ui] {
 	display: none;
+	color:white
 }
+

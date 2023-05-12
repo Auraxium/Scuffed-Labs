@@ -1,5 +1,5 @@
 // import axios from "axios";
-// let port; 
+let port; 
 // let ports = ["http://localhost:9090"];
 
 // // ["http://localhost:9090"].some(async (el) => {
@@ -32,5 +32,4 @@
 
 // export {port} 
 
-const port = "http://localhost:9090"
-export  {port}
+export default port = "http://localhost:9090"

@@ -1,7 +1,7 @@
 import $ from "jquery";
 import { startGame, timeIV, controls } from "../main";
 import axios from "axios";
-import { port } from "./port";
+import  port  from "./port";
 import { v4 as uuidv4 } from "uuid";
 
 let audio;
@@ -25,8 +25,39 @@ $("#play").on("click", (e) => {
   startGame();
 });
 
+$("#lb").on("click", async (e) => {
+  $('[menu]').hide();
+  $('#title-lb').show()
+
+  let { data } = await axios(port + "/getScores");
+
+  if(data.length > 9)
+    data.length = 9;
+
+  let board = data.sort((a, b) => b.score - a.score);
+  console.log(board)
+
+  let str = ''
+  for (let i = 0; i < board.length; i++) {
+    let el = board[i];
+
+    str += `
+      <div class="lb-score text-warning">
+        <div class="me-3">${el.username}:</div>
+        <div class="">${el.highscore}</div>
+      </div>
+    `;
+  }
+
+  $(".tlb-scores").html(str);
+});
+
 $("#retry").on("click", (e) => {
   startGame();
+});
+
+$("#quit").on("click", (e) => {
+  location.reload();
 });
 
 $("#lb").on("click", async (e) => {

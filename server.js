@@ -16,7 +16,7 @@ mongoose
   .then(() => console.log("connected to database"))
   .catch((err) => console.log(err));
 
-const accountModel = mongoose.model("Score", new mongoose.Schema({ _id: {}, username: {}, highscore: {}, time_played: {}, hits: {} }));
+const accountModel = mongoose.model("Score", new mongoose.Schema({ _id: mongoose.Mixed, username: mongoose.Mixed, highscore: mongoose.Mixed, time_played: mongoose.Mixed, hits: mongoose.Mixed }));
 
 const hostUrl = process.env.HURL || "http://localhost:9090";
 
@@ -62,11 +62,24 @@ app.post("/getAccount", async (req, res) => {
 
 app.post("/saveAccount", async (req, res) => {
   let score = await accountModel.findById(req.body._id);
+  console.log(score)
+  console.log(' this is wut u did:')
   console.log(req.body)
-  if (!score) score = new accountModel(req.body);
+  if (!score) {
+    let init = new accountModel(req.body);
+    init.save().then(() => res.send('done'))
+    .catch(err => {
+      console.log(err.data);
+      res.send('failed')
+    });
+  } else {
   score.data = req.body;
-  score.save();
-  return res.send("score saved");
+  score.save().then(() => res.send('done'))
+  .catch(err => {
+    console.log(err.data);
+    res.send('failed')
+  })
+  }
 });
 
 app.post("/oauth", (req, res) => {
