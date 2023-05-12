@@ -11,7 +11,7 @@ let rvm = localStorage.removeItem.bind(localStorage);
 
 async function getScores() {
   let { data: scores } = await axios(port + "/getScores");
-  console.log(scores);
+  // console.log(scores);
   return scores;
 }
 
@@ -29,7 +29,8 @@ $("#lb").on("click", async (e) => {
   $('[menu]').hide();
   $('#title-lb').show()
 
-  let { data } = await axios(port + "/getScores");
+  let { data: b } = await axios(port + "/getScores");
+  let data = b.map(el => el.data);
 
   if(data.length > 9)
     data.length = 9;
@@ -42,7 +43,7 @@ $("#lb").on("click", async (e) => {
     let el = board[i];
 
     str += `
-      <div class="lb-score text-warning">
+      <div class="lb-score">
         <div class="me-3">${el.username}:</div>
         <div class="">${el.highscore}</div>
       </div>
@@ -92,15 +93,20 @@ $(async () => {
 
     if (!account) return;
 
+    console.log('gere1')
+
     if (!account["highscore"]) {
       account["highscore"] = 0;
       account["time_played"] = 0;
       account["hits"] = 0;
+      console.log('pain')
 
-      localStorage.setItem("account", JSON.stringify(account));
-      axios.post(port + "/saveAccount", account);
+      await axios.post(port + "/saveAccount", account);
     }
 
+    console.log('here2')
+
+    localStorage.setItem("account", JSON.stringify(account));
     $("#login").html(account.username);
     $("#logout").show();
   } else if (localStorage.getItem("account")) {
@@ -111,16 +117,16 @@ $(async () => {
     console.log("This is acc: in doc.ready");
     console.log(acc);
 
-    let { data } = await axios.post(port + "/getAccount", acc);
+    // let { data } = await axios.post(port + "/getAccount", acc);
 
-    if (data) {
-      let update = data;
-      if (!update) return;
+    // if (data) {
+    //   let update = data;
+    //   if (!update) return;
 
-      set("account", JSON.stringify(update));
-      $("#login").html(update.username);
-      $("#logout").show();
-    }
+    //   set("account", JSON.stringify(update));
+    //   $("#login").html(update.username);
+    //   $("#logout").show();
+    // }
 
     // console.log('??????//')
 

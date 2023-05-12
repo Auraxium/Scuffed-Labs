@@ -4,7 +4,7 @@ import cors from "cors";
 import { google } from "googleapis";
 import axios from "axios";
 import mongoose from "mongoose";
-const p = console.log
+const p = console.log;
 
 const uri = "mongodb+srv://scuffedlabs:xulq9FQcUlLQMxuq@cluster0.cxornph.mongodb.net/?retryWrites=true&w=majority";
 
@@ -16,7 +16,7 @@ mongoose
   .then(() => console.log("connected to database"))
   .catch((err) => console.log(err));
 
-const accountModel = mongoose.model("Score", new mongoose.Schema({ _id: mongoose.Mixed, username: mongoose.Mixed, highscore: mongoose.Mixed, time_played: mongoose.Mixed, hits: mongoose.Mixed }));
+const accountModel = mongoose.model("Score", new mongoose.Schema({ _id: {}, data: {} }));
 
 const hostUrl = process.env.HURL || "http://localhost:9090";
 
@@ -51,35 +51,53 @@ app.get("/getScores", async (req, res) => {
 });
 
 app.post("/getAccount", async (req, res) => {
-  console.log('this is getAccount:')
-  console.log(req.body)
-  accountModel.findById(req.body._id)
-  .then(acc => {
-    if(!acc) return res.send(null)
-    return res.json(acc)
-  })
+  console.log("this is getAccount:");
+  console.log(req.body);
+  accountModel.findById(req.body._id).then((acc) => {
+    if (!acc) return res.send(null);
+    let {username, time_played, hits, highscore} = acc['data'];
+    res.json({
+      _id: req.body._id,
+      username: username,
+      time_played: time_played,
+      highscore: highscore,
+      hits: hits,
+    })
+  });
 });
 
-app.post("/saveAccount", async (req, res) => {
-  let score = await accountModel.findById(req.body._id);
-  console.log(score)
-  console.log(' this is wut u did:')
-  console.log(req.body)
-  if (!score) {
-    let init = new accountModel(req.body);
-    init.save().then(() => res.send('done'))
-    .catch(err => {
-      console.log(err.data);
-      res.send('failed')
-    });
-  } else {
-  score.data = req.body;
-  score.save().then(() => res.send('done'))
-  .catch(err => {
-    console.log(err.data);
-    res.send('failed')
-  })
-  }
+app.post("/saveAccount", (req, res) => {
+  let { _id, username, time_played, highscore, hits } = req.body;
+  let save = {
+    username: username,
+    time_played: time_played,
+    highscore: highscore,
+    hits: hits,
+  };
+
+  accountModel.findById(_id).then((acc) => {
+    console.log(" this is wut u did:");
+    console.log(save);
+    if (!acc) {
+      let init = new accountModel({ _id: _id, data: save });
+      init
+        .save()
+        .then(() => res.send("done"))
+        .catch((err) => {
+          console.log(err.data);
+          res.send("failed");
+        });
+    } else {
+      acc.data = save;
+      acc
+        .save()
+        .then(() => res.send("done"))
+        .catch((err) => {
+          console.log(err.data);
+          res.send("failed");
+        });
+    }
+  });
 });
 
 app.post("/oauth", (req, res) => {
@@ -101,16 +119,17 @@ app.get("/callback", async (req, res) => {
       Authorization: `Bearer ${response.tokens.access_token}`,
     },
   });
+  console.log(ax);
 
   save[state]["_id"] = ax.data.names[0].metadata.source.id;
   save[state]["username"] = ax.data.names[0].displayName;
 
   let acc = await accountModel.findById(ax.data.names[0].metadata.source.id);
-  p('gomell')
-  p(acc)
+  p("gomell");
+  p(acc);
 
-  if(acc) {
-    if(acc.data) acc = acc.data
+  if (acc) {
+    if (acc.data) acc = acc.data;
     save[state]["username"] = acc.username;
     save[state]["highscore"] = acc.highscore;
     save[state]["hits"] = acc.hits;

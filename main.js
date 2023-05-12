@@ -177,7 +177,7 @@ function startGame() {
   $(".score").html("Score: 0");
   controls.lock();
   getTargets();
-  $("#audio")[0].play();
+  // $("#audio")[0].play();
   $("#audio")[0].volume = 0.3;
 }
 
@@ -213,7 +213,8 @@ async function gameOver() {
   }
 
   let rank = { username: name, highscore: score, gold: true };
-  let { data } = await axios(port + "/getScores");
+  let { data: b } = await axios(port + "/getScores");
+  let data = b.map(el => el.data);
 
   if(data.length > 9)
     data.length = 9;
@@ -229,16 +230,16 @@ async function gameOver() {
       gold = i;
 
     str += `
-      <div class="lb-score text-warning">
-        <div class="me-3" id="l${i}">${el.username}:</div>
-        <div class="" id="l${i + 101}">${el.highscore}</div>
+      <div class="lb-score" id="ls${i}">
+        <div class="me-3">${el.username}:</div>
+        <div class="">${el.highscore}</div>
       </div>
     `;
   }
 
   $("#scores").html(str);
-  // if(gold)
-  // $(`#l${gold}`)
+  if(gold)
+    $(`#ls${gold}`).addClass('text-warning')
 
   console.log(data);
 }
