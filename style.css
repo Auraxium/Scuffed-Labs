@@ -55,6 +55,7 @@ body > div {
 }
 
 .scores {
+	flex-basis: 80;
 	height: 500px;
 	width: 75%;
 	overflow: scroll;
@@ -63,8 +64,13 @@ body > div {
 .score {
 	height: 75px;
 	width: 100%;
+	background-color: rgb(37, 37, 37);
 	display: flex;
 	justify-content: space-around;
+}
+
+.gobuts {
+	flex-basis: 10;
 }
 
 #lb {
