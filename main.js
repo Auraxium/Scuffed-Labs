@@ -32,14 +32,13 @@ let rmv = localStorage.removeItem.bind(localStorage);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 // const controls = new OrbitControls(camera, documment.body)
-const cameraBox = new THREE.Box3().setFromCenterAndSize(camera.position, new THREE.Vector3(0.5, 0.5, 0.5));
 const controls = new PointerLockControls(camera, document.body);
 const raycaster = new THREE.Raycaster();
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ canvas: $('#bg')[0] });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+// document.body.appendChild(renderer.domElement);
 
 camera.position.set(0, 50, -100);
 camera.rotation.set(-2.7095338077918627, 0.01597627537694578, 3.1342261956640667);
@@ -319,4 +318,4 @@ document.addEventListener("keydown", async (e) => {
 
 //#endregion
 
-export { camera, speed, cameraBox, gameOver, scene, startGame, targets, timeIV, controls };
+export { camera, speed, gameOver, scene, startGame, targets, timeIV, controls };
