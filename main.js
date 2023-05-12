@@ -141,11 +141,12 @@ function moveLocation() {
 
 function startGame() {
   $("menu").hide();
-  scene.traverse((obj) => {
-    if (obj.isMesh && obj.material.color.getHex() === 0xd22030) {
-      scene.remove(obj);
-    }
-  });
+
+  // scene.traverse((obj) => {
+  //   if (obj.isMesh && obj.material.color.getHex() === 0xd22030) {
+  //     scene.remove(obj);
+  //   }
+  // });
 
   targets = [];
   score = 0;
@@ -167,17 +168,28 @@ function startGame() {
   controls.lock();
   getTargets();
   $("#audio")[0].play();
-  $("#audio")[0].volume = .3;
+  $("#audio")[0].volume = 0.3;
 }
 
 async function gameOver() {
   if (!timeIV) return;
+  if (!speed) return;
 
   p("game over");
+  speed = 0;
   clearInterval(timeIV);
   timeIV = null;
   controls.unlock();
   $(".game-over").css("display", "flex");
+
+  // scene.traverse((obj) => {
+  //   if (obj.isMesh && obj.material.color.getHex() === 0xd22030) {
+  //     scene.remove(obj);
+  //   }
+  // });
+
+  targets.forEach(mesh => scene.remove(mesh))
+  targets = []
 
   let account;
 
@@ -186,7 +198,7 @@ async function gameOver() {
     account["time_played"] += time;
     account["hits"] += score;
     if (account["highscore"] < score) account["highscore"] = score;
-    set('account', JSON.stringify(account))
+    set("account", JSON.stringify(account));
     await axios.post(port + "/saveAccount", account);
   }
 
@@ -196,16 +208,22 @@ async function gameOver() {
   let board = [...data, rank].sort((a, b) => b.score - a.score);
 
   let str = "";
+  let gold;
   for (let i = 0; i < board.length; i++) {
     let el = board[i];
+    if (el["gold"]) gold = i;
+
     str += `
-  <div class="score">
-    <div class="me-3 ${el.gold ? "text-warning" : ""}">${el.username}</div>
-    <div class="${el.gold ? "text-warning" : ""}">${el.highscore}</div>
-  </div>
-  `;
-    $("#scores").html(str);
+      <div class="score text-warning">
+        <div class="me-3" id="l${i}">${el.username}</div>
+        <div class="" id="l${i + 101}">${el.highscore}</div>
+      </div>
+    `;
   }
+
+  $("#scores").html(str);
+  // if(gold)
+  // $(`#l${gold}`)
 
   console.log(data);
 }

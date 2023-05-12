@@ -84,16 +84,12 @@ $(async () => {
 
     if (data) {
       let update = data;
-
-      console.log("this is update: ");
-      console.log(update);
-
       if (!update) return;
 
       set("account", JSON.stringify(update));
-    $("#login").html(update.username);
-    $("#logout").show();
-  }
+      $("#login").html(update.username);
+      $("#logout").show();
+    }
 
     // console.log('??????//')
 

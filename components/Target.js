@@ -1,24 +1,33 @@
 import * as THREE from "three";
-import { camera, speed, gameOver, scene, targets } from "../main";
+import { camera, speed, gameOver, scene, targets, timeIV } from "../main";
+import $ from 'jquery'
 
 const geometry = new THREE.SphereGeometry(1.5);
 const material = new THREE.MeshStandardMaterial({ color: "#D22030" });
 
 function Target() {
   const star = new THREE.Mesh(geometry, material);
+  let now = Date.now()
   this.geo = star;
   this.animate = function animate() {
-    const distance = camera.position.clone().sub(star.position);
-    const meshBox = new THREE.Box3().setFromObject(star, new THREE.Vector3(0.5, 0.5, 0.5));
-    const cameraBox = new THREE.Box3().setFromCenterAndSize(camera.position, new THREE.Vector3(0.5, 0.5, 0.5));
+    let distance = camera.position.clone().sub(star.position);
+    let m = camera.position.distanceTo(star.position);
+    // console.log(star)
 
-    if (meshBox.intersectsBox(cameraBox)) {
-      gameOver();
+    if(!star.parent)
+      star = null;
+
+    // let m = distance.x + distance.y + distance.z;
+    if (star.parent && m && m < 0.5 && m > -0.5 && Date.now() - now > 3000) {
+      if($('.game-over').is(':visible'))
+        return;
+      console.log('this was the m: ' + m)
       scene.remove(star);
+      gameOver();
       return;
     }
 
-    const direction = distance.normalize();
+    let direction = distance.normalize();
     star.position.add(direction.multiplyScalar(speed));
     requestAnimationFrame(animate);
   };

@@ -42,7 +42,7 @@ body > div {
 	height: 80vh;
 	justify-self: center;
 	align-self: center;
-	background-color: beige;
+	background-color: rgb(188, 188, 84);
 	opacity: .8;
 	border: solid 1px;
 	display: flex;
