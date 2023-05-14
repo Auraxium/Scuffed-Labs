@@ -12,6 +12,7 @@ import { addTarget } from "./components/Target";
 import "./components/MenuEvents";
 import axios from "axios";
 import port from "./components/port";
+import {camera, updateCam} from './components/Camera'
 
 // const stats = new Stats();
 // stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -28,14 +29,9 @@ let get = localStorage.getItem.bind(localStorage);
 let set = localStorage.setItem.bind(localStorage);
 let rmv = localStorage.removeItem.bind(localStorage);
 
-//scene setup
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-// const controls = new OrbitControls(camera, documment.body)
-const controls = new PointerLockControls(camera, document.body);
 const raycaster = new THREE.Raycaster();
-
-const renderer = new THREE.WebGLRenderer({ canvas: $('#bg')[0] });
+const renderer = new THREE.WebGLRenderer({ canvas: $("#bg")[0] });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 // document.body.appendChild(renderer.domElement);
@@ -69,9 +65,11 @@ addTorus([0, 0, 0]);
 
 //updates game at 60 fps
 function animate() {
-  renderer.render(scene, camera);
   requestAnimationFrame(animate);
 
+  // fpscontrols.update();
+
+  renderer.render(scene, camera);
   // stats.update();
 }
 
@@ -102,15 +100,7 @@ let rotations = [
   [1.849602546449333, -0.7145598994559652, 1.9826623581145912],
 ];
 
-_x
-: 
-
-
-_y
-: 
-_z
-: 
-1.9826623581145912
+_x: _y: _z: 1.9826623581145912;
 
 //#endregion
 
@@ -174,7 +164,8 @@ function startGame() {
   $("[menu]").hide();
   $("[ui]").show();
   $(".score").html("Score: 0");
-  controls.lock();
+  // controls.lock();
+	$('#bg')[0].requestPointerLock();
   getTargets();
   // $("#audio")[0].play();
   $("#audio")[0].volume = 0.3;
@@ -188,7 +179,9 @@ async function gameOver() {
   speed = 0;
   clearInterval(timeIV);
   timeIV = null;
-  controls.unlock();
+  // controls.unlock();
+	document.exitPointerLock();
+
   $(".game-over").css("display", "flex");
 
   // scene.traverse((obj) => {
@@ -197,8 +190,8 @@ async function gameOver() {
   //   }
   // });
 
-  targets.forEach(mesh => scene.remove(mesh))
-  targets = []
+  targets.forEach((mesh) => scene.remove(mesh));
+  targets = [];
 
   let account;
 
@@ -213,20 +206,18 @@ async function gameOver() {
 
   let rank = { username: name, highscore: score, gold: true };
   let { data: b } = await axios(port + "/getScores");
-  let data = b.map(el => el.data);
+  let data = b.map((el) => el.data);
 
-  if(data.length > 9)
-    data.length = 9;
+  if (data.length > 9) data.length = 9;
 
   let board = [...data, rank].sort((a, b) => b.score - a.score);
-  console.log(board)
+  console.log(board);
   let str = "";
   let gold;
   for (let i = 0; i < board.length; i++) {
     let el = board[i];
 
-    if (el["gold"]) 
-      gold = i;
+    if (el["gold"]) gold = i;
 
     str += `
       <div class="lb-score" id="ls${i}">
@@ -237,8 +228,7 @@ async function gameOver() {
   }
 
   $("#scores").html(str);
-  if(gold)
-    $(`#ls${gold}`).addClass('text-warning')
+  if (gold) $(`#ls${gold}`).addClass("text-warning");
 
   console.log(data);
 }
@@ -310,12 +300,10 @@ document.addEventListener("keydown", async (e) => {
   }
 });
 
-// document.addEventListener("click", function () {
-//   controls.lock();
-// });
-
-// document.body.requestPointerLock();
+document.addEventListener("click", function () {
+  // controls.lock();
+});
 
 //#endregion
 
-export { camera, speed, gameOver, scene, startGame, targets, timeIV, controls };
+export { camera, speed, gameOver, scene, startGame, targets, timeIV };

@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { startGame, timeIV, controls } from "../main";
+import { startGame, timeIV } from "../main";
 import axios from "axios";
 import  port  from "./port";
 import { v4 as uuidv4 } from "uuid";
@@ -11,7 +11,6 @@ let rvm = localStorage.removeItem.bind(localStorage);
 
 async function getScores() {
   let { data: scores } = await axios(port + "/getScores");
-  // console.log(scores);
   return scores;
 }
 
@@ -21,7 +20,6 @@ $(".title").on("click", (e) => {
 
 $("#play").on("click", (e) => {
   console.log("playing");
-
   startGame();
 });
 
@@ -89,7 +87,9 @@ $("#logout").on("click", (e) => {
 });
 
 $(document).on("click", (e) => {
-  if (timeIV) controls.lock();
+  // if (timeIV) controls.lock();
+	// document.requestPointerLock();
+
 });
 
 $(async () => {
@@ -147,6 +147,10 @@ $(async () => {
   audio.loop = true;
   audio.volume = 0.5;
   // audio.play()
+});
+
+$('#bg').on('click', async e => {
+	if(timeIV) await e.target.requestPointerLock();
 });
 
 $(window).on("unload", (e) => {

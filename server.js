@@ -5,6 +5,12 @@ import { google } from "googleapis";
 import axios from "axios";
 import mongoose from "mongoose";
 const p = console.log;
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+console.log(__dirname)
 
 const uri = "mongodb+srv://scuffedlabs:xulq9FQcUlLQMxuq@cluster0.cxornph.mongodb.net/?retryWrites=true&w=majority";
 
@@ -36,10 +42,12 @@ app.use(
   })
 );
 
+app.use(express.static(__dirname + '/dist'));
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.sendFile("./index.html");
+  res.sendFile("/index.html");
 });
 
 app.get("/test", (req, res) => {
