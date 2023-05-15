@@ -32,4 +32,5 @@ let port;
 
 // export {port} 
 
-export default port = "http://localhost:9090"
+// export default port = "http://localhost:9090"
+export default port = "https://scuffedlabs.auraxium.online"
