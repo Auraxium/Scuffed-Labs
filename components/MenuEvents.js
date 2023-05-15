@@ -86,12 +86,6 @@ $("#logout").on("click", (e) => {
   window.location.reload();
 });
 
-$(document).on("click", (e) => {
-  // if (timeIV) controls.lock();
-	// document.requestPointerLock();
-
-});
-
 $(async () => {
   if (localStorage.getItem("uuid")) {
     let { data: account } = await axios.post(port + "/getToken", { uuid: localStorage.getItem("uuid") }).catch((err) => null);
@@ -149,8 +143,37 @@ $(async () => {
   // audio.play()
 });
 
+document.addEventListener("keydown", async (e) => {
+  switch (e.key.toLowerCase()) {
+    case "m":
+      console.log(camera.position);
+      break;
+    case "n":
+      console.log(player.box.position);
+      break;
+    case "b":
+      console.log(camera.rotation);
+      break;
+    case "r":
+      location.reload();
+      break;
+    case "v":
+      speed = 1;
+      break;
+    case "k":
+      if (targets.length) {
+        hitTarget(targets[0]);
+      }
+      break;
+    case ".":
+      camera.position.set(...positions[++pc % 3]);
+      camera.rotation.set(...rotations[pc % 3]);
+      break;
+  }
+});
+
 $('#bg').on('click', async e => {
-	if(timeIV) await e.target.requestPointerLock();
+	// if(timeIV) await e.target.requestPointerLock();
 });
 
 $(window).on("unload", (e) => {

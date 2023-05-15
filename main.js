@@ -3,8 +3,8 @@ import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as player from "./components/player.js";
-import { FirstPersonControls } from "three/addons/controls/FirstPersonControls.js";
-import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
+import { FirstPersonControls } from "three/examples/jsm/controls/FirstPersonControls.js";
+import { PointerLockControls } from "three/examples/jsm/controls/PointerLockControls.js";
 import Stats from "stats.js";
 import $ from "jquery";
 import Torus from "./components/Torus";
@@ -12,7 +12,7 @@ import { addTarget } from "./components/Target";
 import "./components/MenuEvents";
 import axios from "axios";
 import port from "./components/port";
-import {camera, updateCam} from './components/Camera'
+import {camera, controls} from './components/Camera'
 
 // const stats = new Stats();
 // stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -68,6 +68,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   // fpscontrols.update();
+	// controls.update();
 
   renderer.render(scene, camera);
   // stats.update();
@@ -165,7 +166,7 @@ function startGame() {
   $("[ui]").show();
   $(".score").html("Score: 0");
   // controls.lock();
-	$('#bg')[0].requestPointerLock();
+	// $('#bg')[0].requestPointerLock();
   getTargets();
   // $("#audio")[0].play();
   $("#audio")[0].volume = 0.3;
@@ -272,6 +273,7 @@ document.addEventListener("pointerdown", function () {
 
 //scuffed debug
 document.addEventListener("keydown", async (e) => {
+	// p(e.key)
   switch (e.key.toLowerCase()) {
     case "m":
       console.log(camera.position);
@@ -288,6 +290,13 @@ document.addEventListener("keydown", async (e) => {
     case "v":
       speed = 1;
       break;
+		case "escape":
+			p('a')
+			if(timeIV) {
+				$('[menu]').hide()
+				$('#pause').show()
+			}
+			break;
     case "k":
       if (targets.length) {
         hitTarget(targets[0]);
