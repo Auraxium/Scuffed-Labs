@@ -58,7 +58,7 @@ $("#stats").on("click", (e) => {
   let str = `
     <div class="mb-1">Highscore: \t ${account['highscore']}</div>
     <div class="mb-1">Total Hits: \t ${account['hits']}</div>
-    <div class="mb-1">Time Played: \t ${account['time_played']}</div>
+    <div class="mb-1">Time Played: \t ${Math.floor(account['time_played'] / 60)}:${(account['time_played'] % 60).toString().padStart(2, "0")}</div>
   `
   $('#s').html(str)
 });
@@ -67,7 +67,7 @@ $("#retry").on("click", (e) => {
   startGame();
 });
 
-$("#quit").on("click", (e) => {
+$(".quit").on("click", (e) => {
   location.reload();
 });
 
@@ -85,6 +85,8 @@ $("#logout").on("click", (e) => {
   localStorage.removeItem("account");
   window.location.reload();
 });
+
+
 
 $(async () => {
   if (localStorage.getItem("uuid")) {
@@ -143,34 +145,34 @@ $(async () => {
   // audio.play()
 });
 
-document.addEventListener("keydown", async (e) => {
-  switch (e.key.toLowerCase()) {
-    case "m":
-      console.log(camera.position);
-      break;
-    case "n":
-      console.log(player.box.position);
-      break;
-    case "b":
-      console.log(camera.rotation);
-      break;
-    case "r":
-      location.reload();
-      break;
-    case "v":
-      speed = 1;
-      break;
-    case "k":
-      if (targets.length) {
-        hitTarget(targets[0]);
-      }
-      break;
-    case ".":
-      camera.position.set(...positions[++pc % 3]);
-      camera.rotation.set(...rotations[pc % 3]);
-      break;
-  }
-});
+// document.addEventListener("keydown", async (e) => {
+//   switch (e.key.toLowerCase()) {
+//     case "m":
+//       console.log(camera.position);
+//       break;
+//     case "n":
+//       console.log(player.box.position);
+//       break;
+//     case "b":
+//       console.log(camera.rotation);
+//       break;
+//     case "r":
+//       location.reload();
+//       break;
+//     case "v":
+//       speed = 1;
+//       break;
+//     case "k":
+//       if (targets.length) {
+//         hitTarget(targets[0]);
+//       }
+//       break;
+//     case ".":
+//       camera.position.set(...positions[++pc % 3]);
+//       camera.rotation.set(...rotations[pc % 3]);
+//       break;
+//   }
+// });
 
 $('#bg').on('click', async e => {
 	// if(timeIV) await e.target.requestPointerLock();

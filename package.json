@@ -2,7 +2,7 @@
   "name": "three-comp-584",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "start": "vite",
     "server": "nodemon server",

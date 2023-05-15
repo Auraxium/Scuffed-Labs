@@ -11,8 +11,8 @@ function clamp(num, min, max) {
   return num <= min ? min : num >= max ? max : num;
 }
 
-$(document).on('click', e => {
-	if(timeIV) controls.lock()
-})
+// $(document).on('click', e => {
+// 	if(timeIV) controls.lock()
+// })
 
 export {camera, controls}

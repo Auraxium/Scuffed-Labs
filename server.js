@@ -1,16 +1,16 @@
-import express from "express";
+const  express = require("express") ;
 const app = express();
-import cors from "cors";
-import { google } from "googleapis";
-import axios from "axios";
-import mongoose from "mongoose";
+const cors = require("cors") ;
+const { google } = require("googleapis") ;
+const axios = require("axios") ;
+const mongoose = require("mongoose") ;
 const p = console.log;
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+const { fileURLToPath } = require('url') ;
+const { dirname } = require('path') ;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-console.log(__dirname)
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
+// console.log(__dirname)
 
 const uri = "mongodb+srv://scuffedlabs:xulq9FQcUlLQMxuq@cluster0.cxornph.mongodb.net/?retryWrites=true&w=majority";
 

@@ -12,7 +12,7 @@ import { addTarget } from "./components/Target";
 import "./components/MenuEvents";
 import axios from "axios";
 import port from "./components/port";
-import {camera, controls} from './components/Camera'
+import { camera, controls } from "./components/Camera";
 
 // const stats = new Stats();
 // stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -68,7 +68,7 @@ function animate() {
   requestAnimationFrame(animate);
 
   // fpscontrols.update();
-	// controls.update();
+  // controls.update();
 
   renderer.render(scene, camera);
   // stats.update();
@@ -140,7 +140,7 @@ function moveLocation() {
 }
 
 function startGame() {
-  $("menu").hide();
+  $("[menu]").hide();
 
   // scene.traverse((obj) => {
   //   if (obj.isMesh && obj.material.color.getHex() === 0xd22030) {
@@ -165,8 +165,8 @@ function startGame() {
   $("[menu]").hide();
   $("[ui]").show();
   $(".score").html("Score: 0");
-  // controls.lock();
-	// $('#bg')[0].requestPointerLock();
+  controls.lock();
+  // $('#bg')[0].requestPointerLock();
   getTargets();
   // $("#audio")[0].play();
   $("#audio")[0].volume = 0.3;
@@ -176,12 +176,13 @@ async function gameOver() {
   if (!timeIV) return;
   if (!speed) return;
 
+	$("[menu]").hide();
+
   p("game over");
   speed = 0;
   clearInterval(timeIV);
   timeIV = null;
-  // controls.unlock();
-	document.exitPointerLock();
+  controls.unlock();
 
   $(".game-over").css("display", "flex");
 
@@ -271,9 +272,24 @@ document.addEventListener("pointerdown", function () {
   }
 });
 
+let speedsave = 0;
+
+function setter(x, y) {
+  return (x = y);
+}
+
+$(".resume").on("click", (e) => {
+	p('run resume')
+	controls.lock()
+  // speed = speedsave;
+  // timeIV = setInterval(timeTick, 1000);
+	// controls.lock()
+  // $("[menu]").hide();
+});
+
 //scuffed debug
 document.addEventListener("keydown", async (e) => {
-	// p(e.key)
+  // p(e.key)
   switch (e.key.toLowerCase()) {
     case "m":
       console.log(camera.position);
@@ -290,13 +306,9 @@ document.addEventListener("keydown", async (e) => {
     case "v":
       speed = 1;
       break;
-		case "escape":
-			p('a')
-			if(timeIV) {
-				$('[menu]').hide()
-				$('#pause').show()
-			}
-			break;
+    case "escape":
+			
+      break;
     case "k":
       if (targets.length) {
         hitTarget(targets[0]);
@@ -310,9 +322,9 @@ document.addEventListener("keydown", async (e) => {
 });
 
 document.addEventListener("click", function () {
-  // controls.lock();
+  if($('[menu]:visible').length === 0) controls.lock();
 });
 
 //#endregion
 
-export { camera, speed, gameOver, scene, startGame, targets, timeIV };
+export { camera, speed, gameOver, scene, startGame, targets, timeIV, speedsave, setter };
